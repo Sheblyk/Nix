@@ -11,12 +11,12 @@ public class DaoLocation {
     private static final String GET_COUNT = "SELECT COUNT(*) FROM LOCATION";
     private Connection connection;
 
-    public DaoLocation(Connection c){
+    public DaoLocation(Connection c) {
         this.connection = c;
     }
 
-    public int getLocationCount(){
-        try(PreparedStatement pr = connection.prepareStatement("SELECT count(*) FROM dbcity.location")) {
+    public int getLocationCount() {
+        try (PreparedStatement pr = connection.prepareStatement("SELECT count(*) FROM dbcity.location")) {
             ResultSet resultSet = pr.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);

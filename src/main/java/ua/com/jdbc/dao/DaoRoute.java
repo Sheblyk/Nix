@@ -14,15 +14,15 @@ public class DaoRoute {
     private static final String GET_ROUTES = "SELECT * FROM ROUTE";
     private Connection connection;
 
-    public DaoRoute(Connection c){
+    public DaoRoute(Connection c) {
         this.connection = c;
     }
 
-    public List<Route> getRoute(){
+    public List<Route> getRoute() {
         List<Route> routes = new ArrayList<Route>();
-        try(PreparedStatement pr = connection.prepareStatement(GET_ROUTES)){
+        try (PreparedStatement pr = connection.prepareStatement(GET_ROUTES)) {
             ResultSet resultSet = pr.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 Route route = new Route();
                 route.setId(resultSet.getInt("id"));
                 route.setFrom_id(resultSet.getInt("from_id"));
@@ -34,6 +34,6 @@ public class DaoRoute {
         } catch (SQLException e) {
             System.out.println("Couldn`t get list of routes");
         }
-       throw new RuntimeException();
+        throw new RuntimeException();
     }
 }
