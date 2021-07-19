@@ -2,22 +2,19 @@ package ua.com.jdbc.connection;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.sql.*;
 import java.util.Properties;
 
 public class DbConnect {
-    Connection connection;
 
-    public Connection getDbConnect(){
+    public Connection getDbConnect() {
         Properties properties = loadProperties();
         String url = properties.getProperty("url");
-        try{
-            connection = DriverManager.getConnection(url, properties);
-            connection.setAutoCommit(false);
-            return connection;
+        try {
+            return DriverManager.getConnection(url, properties);
+
         } catch (SQLException e) {
-            System.out.println("Connection wasn`mt created");
+            System.out.println("Connection wasn`t created");
             return null;
         }
     }
@@ -32,13 +29,6 @@ public class DbConnect {
         return properties;
     }
 
-    public void closeConnection(){
-        try{
-            connection.close();
-        } catch (SQLException e) {
-            System.out.println("Connection wasn`t closed");
-        }
-    }
 }
 
 
