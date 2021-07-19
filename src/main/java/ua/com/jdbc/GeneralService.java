@@ -11,6 +11,7 @@ import ua.com.jdbc.entity.Route;
 import ua.com.jdbc.entity.Solution;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,24 +23,26 @@ public class GeneralService {
     private DaoSolution daoSolution;
     private ShortestPath shortestPath;
 
-    public GeneralService(){
+    public GeneralService() {
         dbConnect = new DbConnect();
-        Connection connection = dbConnect.getDbConnect();
-        daoLocation = new DaoLocation(connection);
-        daoProblem = new DaoProblem(connection);
-        daoRoute = new DaoRoute(connection);
-        daoSolution = new DaoSolution(connection);
         shortestPath = new ShortestPath();
     }
 
-    public void start(){
-        shortestPath.setCities(daoLocation.getLocationCount());
-        List<Route> routes = daoRoute.getRoute();
-        shortestPath.setGraph(getAdjacencyMatrix(routes, shortestPath.getCities()));
-        List<Problem> problems = daoProblem.getProblems();
-        List<Solution> solutions = getSolution(problems);
-        daoSolution.addSolution(solutions);
-        dbConnect.closeConnection();
+    public void start() {
+        try (Connection connection = dbConnect.getDbConnect()) {
+            daoLocation = new DaoLocation(connection);
+            daoProblem = new DaoProblem(connection);
+            daoRoute = new DaoRoute(connection);
+            daoSolution = new DaoSolution(connection);
+            shortestPath.setCities(daoLocation.getLocationCount());
+            List<Route> routes = daoRoute.getRoute();
+            shortestPath.setGraph(getAdjacencyMatrix(routes, shortestPath.getCities()));
+            List<Problem> problems = daoProblem.getProblems();
+            List<Solution> solutions = getSolution(problems);
+            daoSolution.addSolution(solutions);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private int[][] getAdjacencyMatrix(List<Route> routes, int count) {
@@ -50,12 +53,12 @@ public class GeneralService {
         return graph;
     }
 
-    private List<Solution> getSolution(List<Problem> problems){
-        List<Solution> solutions = new ArrayList<Solution>();
-        for (Problem p: problems) {
+    private List<Solution> getSolution(List<Problem> problems) {
+        List<Solution> solutions = new ArrayList<>();
+        for (Problem p : problems) {
             Solution s = new Solution();
             s.setProblem_id(p.getId());
-            s.setCost(shortestPath.dijkstra(p.getFrom_id()-1, p.getTo_id()-1));
+            s.setCost(shortestPath.dijkstra(p.getFrom_id() - 1, p.getTo_id() - 1));
             solutions.add(s);
         }
         return solutions;
